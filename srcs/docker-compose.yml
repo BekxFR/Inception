@@ -1,0 +1,69 @@
+version: "3.5"
+
+services:
+ mariadb:
+  container_name: mariadb
+  build:
+   context: ./srcs/mariadb
+#   dockerfile: Dockerfile.mdb : for specify dockerfile name - use Dockerfile by default
+  restart: unless-stopped
+  volumes:
+   - db_data:/var/lib/mysql
+  env_file: 
+   - /Dockers/Config/.env
+  networks:
+   - inception_network
+  ports:
+   - "3306:3306"
+
+ nginx:
+  container_name: nginx
+  depends_on:
+  - wordpress
+  build:
+   context: ./srcs/nginx
+  restart: on-failure
+  ports:
+   - "443:443"
+  volumes:
+   - wp_data:/var/www/wordpress
+  networks:
+   - inception_network
+
+ wordpress:
+  container_name: wordpress
+  depends_on:
+  - mariadb
+  build:
+   context: ./srcs/wordpress
+  env_file: 
+   - /Dockers/Config/.env
+  restart: on-failure
+  volumes:
+   - wp_data:/var/www/wordpress
+  networks:
+   - inception_network
+  ports:
+   - "9000:9000"
+
+volumes:
+ wp_data:
+  driver: local
+  name: WordPress
+  driver_opts:
+   type: none
+   o: bind
+   device: /home/chillion/data/WordPress
+
+ db_data:
+  driver: local
+  name: MariaDB
+  driver_opts:
+   type: none
+   o: bind
+   device: /home/chillion/data/MariaDB
+
+networks:
+  inception_network:
+   name: inception_network
+   driver: bridge
