@@ -12,7 +12,7 @@ To run the project, you have to install __docker-compose and docker__.
 ##### Usage
 
 ```bash
-  gcl https://github.com/BekxFR/inception.git
+  gcl https://github.com/BekxFR/Inception.git
   cd inception
   make
 ```
